@@ -12,17 +12,17 @@ ignoreURLs = [
     "pic.twitter.com/qDIHV99Zkw",
     "pic.twitter.com/ToD74qjLVj"
 ]
-twit.stream('statuses/filter', { 'follow': "115639376" }, function(stream) {
+twit.stream('statuses/filter', { 'follow': "133684052" }, function(stream) {
     stream.on('data', function(data) {
         if (!data.entities.media) { return; }
         if (data.in_reply_to_user_id == null) { return }
         var media = data.entities.media[0].display_url
-        var user = data.in_reply_to_screen_name
+        var user = data.in_reply_to_screen_name;
         // var mediaURL = media
         // console.log(data)
         // return
         var text = data.text
-        var flag = /おめでとうございます/.test(data.text);
+        var flag = text.indexOf('はずれ')==-1;
         var created_at = data.created_at;
         var spacer = Array(16 - user.length).fill(' ').join('');
         console.log(`${flag?'\u001b[31m':'\u001b[32m'}${user}${spacer}| ${created_at}\t| ${flag?`あたり ${media}`:"はずれ"}`)

@@ -7,25 +7,29 @@ const baseHash = "Qo8vYDT6XVWbEcxKO+8YeQ=="
 var twit = new twitter(require('./tokens.json'));
 var hit = "https://t.co/bbYYnhdf4q"
 
-var ignoreURLs = ["pic.twitter.com/aBJGpdXbs6","pic.twitter.com/64H5mpQCKk","pic.twitter.com/k2xOHOp23T"]
-ignoreURLs = [
-    "pic.twitter.com/qDIHV99Zkw",
-    "pic.twitter.com/ToD74qjLVj"
+var ignoreURLs = [
+    "http://pbs.twimg.com/tweet_video_thumb/DVSk2T3VoAAdLY9.jpg",
+    "https://t.co/W9gFJT9oPE",
+    "https://t.co/jXMQdeKuaw"
 ]
-twit.stream('statuses/filter', { 'follow': "115639376" }, function(stream) {
+twit.stream('statuses/filter', { 'follow': "89142182" }, function(stream) {
     stream.on('data', function(data) {
-        if (!data.entities.media) { return; }
+        // console.log(data);
         if (data.in_reply_to_user_id == null) { return }
-        var media = data.entities.media[0].display_url
+        if (!data.extended_tweet){return}
         var user = data.in_reply_to_screen_name
-        // var mediaURL = media
-        // console.log(data)
-        // return
+
         var text = data.text
-        var flag = /おめでとうございます/.test(data.text);
+        // console.log(data.extended_tweet.entities.media)
+        if(!data.extended_tweet.entities.media[0]){return}
+        // console.log(ignoreURLs)
+        var flag = !ignoreURLs.find(d=>{
+                // console.log(data.extended_tweet.entities.media[0])
+                return d==data.extended_tweet.entities.media[0].media_url
+            });
         var created_at = data.created_at;
         var spacer = Array(16 - user.length).fill(' ').join('');
-        console.log(`${flag?'\u001b[31m':'\u001b[32m'}${user}${spacer}| ${created_at}\t| ${flag?`あたり ${media}`:"はずれ"}`)
+        console.log(`${flag?'\u001b[31m':'\u001b[32m'}${user}${spacer}| ${created_at}\t| ${flag?`あたり`:"はずれ"} ${data.extended_tweet.entities.media[0].media_url}`)
         return
     });
 });
@@ -42,3 +46,13 @@ function Larger(a, b) {
     return false;
 }
 setInterval(() => {}, 10000)
+
+/*
+20
+20:05
+21:00
+21:07
+
+01秒~02秒に2回
+
+ */
